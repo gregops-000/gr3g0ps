@@ -1,0 +1,28 @@
+Proxmox 
+
+Disable the official repository and replace it with the community repo. 
+
+Step 1: Update the Ceph repository from enterprise to no-subscription
+
+sed -i \
+  -e 's|https://enterprise.proxmox.com/debian/ceph-squid|http://download.proxmox.com/debian/ceph-squid|g' \
+  -e 's/Components: enterprise/Components: no-subscription/g' \
+  /etc/apt/sources.list.d/ceph.sources
+
+Step 2: Remove the PVE enterprise repository file
+
+rm /etc/apt/sources.list.d/pve-enterprise.sources
+
+Step 3: Create the PVE no-subscription repository file
+
+cat > /etc/apt/sources.list.d/proxmox.sources << 'EOF'
+Types: deb
+URIs: http://download.proxmox.com/debian/pve
+Suites: trixie
+Components: pve-no-subscription
+Signed-By: /usr/share/keyrings/proxmox-archive-keyring.gpg
+EOF
+
+
+Step 4: Update the package cache
+apt update
